@@ -6,5 +6,4 @@ bestbigmovie.com###topBanner
 # 去除xvideos搜索xvideos RED广告、频道页面xvideos RED广告
 xvideos.com##.premium-results-line
 xvideos.com##.p-red
-xvideos.com##.embed-responsive-item, .banner-slide, .banner-1, .banner-goto-redtab
-xvideos.com##.embed-responsive, .banner-slider
+xvideos.com##.banner-goto-redtab

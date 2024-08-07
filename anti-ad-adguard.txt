@@ -7,3 +7,13 @@ bestbigmovie.com###topBanner
 xvideos.com##.premium-results-line
 xvideos.com##.p-red
 xvideos.com##.banner-goto-redtab
+# pornhub地区切换消息及pornhub商店广告
+pornhub.com###countryRedirectMessage
+pornhub.com###welcome
+# giga上横幅及右横幅
+giga.de##.bobjb
+giga.de##.stk
+# pcgamer提醒登陆广告
+pcgamer.com##.exit-intent, .exit-intent__background
+# xnxx gold广告
+xnxx.com##.premium-results-line

@@ -17,3 +17,14 @@ giga.de##.stk
 pcgamer.com##.exit-intent, .exit-intent__background
 # xnxx gold广告
 xnxx.com##.premium-results-line
+# 艾利浩斯学院图书馆文章内广告
+alhs.xyz##div[class="0266f0046817c347c07bcc8a351f064e"]
+alhs.xyz##div[data-index="2"]
+# 黑沼泽俱乐部18禁警告
+zhaoze.pro##.agl_wrapper
+# 蔷薇后花园18禁警告
+houhuayuan.vip##.agl_wrapper
+# 91PORNY九色解除对视频的拦截
+@@||int.mwbbiz.com/static/v1.8/videoShow.js
+@@||int.mwbbiz.com/static/v1.8/lazyload.js
+@@||int.mwbbiz.com/static/v1.8/app.js

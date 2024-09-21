@@ -28,3 +28,8 @@ houhuayuan.vip##.agl_wrapper
 @@||int.mwbbiz.com/static/v1.8/videoShow.js
 @@||int.mwbbiz.com/static/v1.8/lazyload.js
 @@||int.mwbbiz.com/static/v1.8/app.js
+# switchrom.net删除下载时广告拦截器检测
+file.switchrom.net###qnjuar-blanket
+# bilibili删除所谓“feed-card”（实为广告占位符）、提醒登陆广告
+bilibili.com##.feed-card
+bilibili.com##.vip-login-tip

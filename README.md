@@ -12,7 +12,7 @@
 | 文件                    | 原始链接 (Raw)                                                                                       | 适用产品 |
 | :---------------------- | :------------------------------------------------------------------------------------------------- | :------- |
 | `增量补丁（与上述规则配合使用）`   | [点击下载](https://raw.githubusercontent.com/ack20a/AckAdguardRules/master/anti-ad-adguard.txt) | AdGuard  |
-| `全家桶（已包含上述文件，一小时更新一次）`   | [点击下载]([https://raw.githubusercontent.com/ack20a/AckAdguardRules/master/anti-ad-adguard.txt](https://raw.githubusercontent.com/ack20a/AckAdguardRules/refs/heads/main/AckAdguardRules.txt)) | AdGuard  |
+| `全家桶（已包含上述文件，一小时更新一次）`   | [点击下载](https://raw.githubusercontent.com/ack20a/AckAdguardRules/refs/heads/main/AckAdguardRules.txt) | AdGuard  |
 
 ---
 

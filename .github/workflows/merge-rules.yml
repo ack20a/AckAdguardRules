@@ -1,0 +1,137 @@
+name: Merge and Update AckAdguardRules
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # 每小时执行一次
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  merge-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Merge rules
+        id: merge
+        run: |
+          python - << EOF
+          import requests
+          import os
+
+          rules_urls = [
+            "https://raw.githubusercontent.com/easylist/antiadblockfilters/refs/heads/master/antiadblockfilters/antiadblock_english.txt",
+            "https://raw.githubusercontent.com/AdguardTeam/FiltersRegistry/master/filters/filter_224_Chinese/filter.txt",
+            "https://raw.githubusercontent.com/AdguardTeam/FiltersRegistry/master/filters/filter_18_Annoyances_Cookies/filter.txt",
+            "https://raw.githubusercontent.com/AdguardTeam/FiltersRegistry/master/filters/filter_2_Base/filter.txt",
+            "https://raw.githubusercontent.com/ack20a/AckAdguardRules/refs/heads/main/anti-ad-adguard.txt",
+          ]
+
+          merged_rules = []
+          merged_rules.append('! Title: AckAdguardRules')
+          merged_rules.append('! Version: 1.0')
+          merged_rules.append('! Last modified: ' +  __import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+          merged_rules.append('! Description: Merge of various AdGuard and EasyList filters, combined to remove ad blocking detectors, Chinese site annoyances and more, suitable for use in mainland China.')
+          merged_rules.append('! GitHub: https://github.com/ack20a/AckAdguardRules')
+          merged_rules.append('! Source URL: ' + ', '.join(rules_urls))
+
+          for url in rules_urls:
+              try:
+                  response = requests.get(url)
+                  response.raise_for_status()
+                  
+                  # 添加注释头以区分规则来源
+                  merged_rules.append(f"\n! --------- Source: {url} --------- \n")
+                  merged_rules.extend(response.text.splitlines())
+                  
+              except requests.exceptions.RequestException as e:
+                  print(f"Error downloading from {url}: {e}")
+          
+          # 避免生成的文件有太多空行
+          merged_rules_without_consecutive_blank_lines = []
+          previous_line_was_blank = False
+          for line in merged_rules:
+              is_blank = line.strip() == ""
+              if not (is_blank and previous_line_was_blank):
+                  merged_rules_without_consecutive_blank_lines.append(line)
+              previous_line_was_blank = is_blank
+          
+          merged_rules_str = "\n".join(merged_rules_without_consecutive_blank_lines)
+          
+          output_file = os.environ.get('GITHUB_OUTPUT', 'output.txt') # GITHUB_OUTPUT environment variable allows setting step output in GitHub Actions workflows
+          with open(output_file, 'a') as f:
+            f.write(f"merged_rules_str={merged_rules_str}\n")
+
+      - name: Commit and push changes
+        uses: actions/github-script@v7
+        if: ${{ always() }}
+        with:
+          script: |
+            const fs = require('fs').promises;
+            const {
+              merged_rules_str,
+            } = ${{ steps.merge.outputs }};
+
+            await fs.writeFile('AckAdguardRules.txt', merged_rules_str);
+
+            const { repo, owner } = context.repo;
+
+            try {
+              await github.rest.repos.getBranchProtection({
+                owner,
+                repo,
+                branch: context.ref.replace('refs/heads/', ''),
+              });
+              console.log('Branch protection is enabled for this branch. Skipping commit.');
+            } catch (error) {
+              if (error.status === 404) {
+                console.log('Branch protection is not enabled for this branch.');
+
+                const currentCommit = await github.rest.git.getRef({
+                  owner,
+                  repo,
+                  ref: context.ref.replace('refs/', ''),
+                });
+
+                const { data: changedFiles } = await github.rest.git.createTree({
+                  owner,
+                  repo,
+                  tree: [
+                    {
+                      path: 'AckAdguardRules.txt',
+                      mode: '100644',
+                      type: 'blob',
+                      content: merged_rules_str,
+                    },
+                  ],
+                  base_tree: currentCommit.data.object.sha,
+                });
+
+                const commitMessage = `Update AckAdguardRules at ${new Date().toUTCString()}`;
+                const newCommit = await github.rest.git.createCommit({
+                  owner,
+                  repo,
+                  message: commitMessage,
+                  tree: changedFiles.sha,
+                  parents: [currentCommit.data.object.sha],
+                });
+
+                await github.rest.git.updateRef({
+                  owner,
+                  repo,
+                  ref: context.ref.replace('refs/', ''),
+                  sha: newCommit.data.sha,
+                  force: true,
+                });
+              } else {
+                console.error('Error checking for branch protection:', error);
+              }
+            }

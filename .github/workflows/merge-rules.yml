@@ -64,21 +64,23 @@ jobs:
                   merged_rules_without_consecutive_blank_lines.append(line)
               previous_line_was_blank = is_blank
           
-          merged_rules_str = "\n".join(merged_rules_without_consecutive_blank_lines)
+          merged_rules_str = "~|~".join(merged_rules_without_consecutive_blank_lines)
           
           output_file = os.environ.get('GITHUB_OUTPUT', 'output.txt') # GITHUB_OUTPUT environment variable allows setting step output in GitHub Actions workflows
           with open(output_file, 'a') as f:
             f.write(f"merged_rules_str={merged_rules_str}\n")
+          EOF
 
       - name: Commit and push changes
         uses: actions/github-script@v7
-        if: ${{ always() }}
         with:
           script: |
             const fs = require('fs').promises;
-            const {
+            let {
               merged_rules_str,
             } = ${{ steps.merge.outputs }};
+
+            merged_rules_str = merged_rules_str.split('~|~').join('\n');
 
             await fs.writeFile('AckAdguardRules.txt', merged_rules_str);
 
